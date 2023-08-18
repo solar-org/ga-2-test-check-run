@@ -1,15 +1,19 @@
+name: Concurrency Demo
+
 on: workflow_dispatch
 
 jobs:
     test:
+        timeout-minutes: 1
         runs-on: ubuntu-latest
         steps:
             - name: testing
               run: |
-                sleep 60
+                sleep 600
                 echo testing
 
     deploy:
+        timeout-minutes: 0.1
         concurrency: 
             group: production
             cancel-in-progress: true
@@ -17,5 +21,5 @@ jobs:
         steps:
             - name: testing
               run: |
-                sleep 60
+                sleep 600
                 echo deploying
