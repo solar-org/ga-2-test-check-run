@@ -1,7 +1,7 @@
 name: Generate ASCII Artwork
 
 on:  
-  push:
+  push
 
 jobs:
   ascii_job:
@@ -9,18 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         
-      - name: Install Cowsay Program
-        run: sudo apt-get install cowsay -y
-
-      - name: Execute Cowsay CMD
-        run: cowsay -f dragon "Run for cover, I am a DRAGON....RAWR" >> dragon.txt
-
-      - name: Test File Exists
-        run: grep -i "dragon" dragon.txt
-
-      - name: Read File
-        run: cat dragon.txt
-
       - name: Checkout Repo Files
-        run: ls
+        run: ls 
+
+      - name: Executing Shell Script
+        run: ./ascii-script.sh
   
