@@ -20,7 +20,7 @@ jobs:
           path: dragon.txt
   
   test:
-    needs: [build_job_1]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
