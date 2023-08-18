@@ -1,0 +1,23 @@
+name: CI
+
+on:  
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  first_job:
+    runs-on: ubuntu-latest
+    steps:
+      #- uses: actions/checkout@v3
+
+      - name: Welcome
+        run: echo "This is our first GitHub Actions Job"
+
+      - name: List files in repo
+        run: ls
+
+      - name: Read README.md file
+        run: cat README.md
