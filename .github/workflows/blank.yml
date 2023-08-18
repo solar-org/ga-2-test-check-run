@@ -53,9 +53,6 @@ jobs:
         run: echo docker push $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
 
   deploy:
-    concurrency: 
-      group: production
-      cancel-in-progress: false
     if: ${{ github.ref == 'refs/heads/main' }}
     strategy:
       matrix:
