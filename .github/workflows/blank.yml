@@ -55,11 +55,12 @@ jobs:
   deploy:
     strategy:
       matrix:
-         os: [ubuntu-latest, ubuntu-20.04, windows-latest, windows-2022, windows-2019]
+         os: [ubuntu-latest, ubuntu-20.04, windows-latest]
+         images: [hello-world, alpine]
     needs: [docker]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Echo Docker Details
         run: docker info
-      - name: Deploy
-        run: echo docker run $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
+      - name: Run Images
+        run: docker run ${{ matrix.images }}
