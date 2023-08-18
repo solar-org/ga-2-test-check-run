@@ -3,6 +3,10 @@ name: Generate ASCII Artwork
 on:  
   push
 
+env:
+  CONTAINER_REGISTRY: docker.io
+  DOCKER_USERNAME: dockerUsername
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,27 +40,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Docker Build
-        env:
-          CONTAINER_REGISTRY: docker.io
-          USERNAME: dockerUsername
-        run: echo docker build -t $CONTAINER_REGISTRY/$USERNAME/imageName:latest
+        run: echo docker build -t $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
 
       - name: Docker Login
-        env:
-          USERNAME: dockerUsername
-          PASSWORD: s3cUrePaSsw0rd
-        run: echo docker login --username=$USERNAME --password=$PASSWORD
-
+        run: echo docker login --username=$DOCKER_USERNAME --password=${{ secrets.DOCKER_PASSWORD }}
+        
       - name: Docker Publish
-        env:
-          CONTAINER_REGISTRY: docker.io
-          USERNAME: dockerUsername
-        run: echo docker push $CONTAINER_REGISTRY/$USERNAME/imageName:latest
-
+        run: echo docker push $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
 
   deploy:
     needs: [docker]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy
-        run: echo docker run $CONTAINER_REGISTRY/$USERNAME/imageName:latest
+        run: echo docker run $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
