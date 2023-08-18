@@ -10,60 +10,60 @@ env:
 
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Cowsay Program
-        run: sudo apt-get install cowsay -y
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Install Cowsay Program
+  #       run: sudo apt-get install cowsay -y
 
-      - name: Execute Cowsay CMD
-        run: cowsay -f dragon "Run for cover, I am a DRAGON....RAWR" >> dragon.txt
+  #     - name: Execute Cowsay CMD
+  #       run: cowsay -f dragon "Run for cover, I am a DRAGON....RAWR" >> dragon.txt
       
-      - name: Archive Dragon File
-        uses: actions/upload-artifact@v3
-        with:
-          name: dragon-text-file
-          path: dragon.txt
+  #     - name: Archive Dragon File
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: dragon-text-file
+  #         path: dragon.txt
   
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: dragon-text-file
+  # test:
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download Artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: dragon-text-file
 
-      - name: Test File Exists
-        run: grep -i "dragon" dragon.txt
+  #     - name: Test File Exists
+  #       run: grep -i "dragon" dragon.txt
 
-  docker:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Docker Build
-        run: echo docker build -t $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
+  # docker:
+  #   needs: [test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Docker Build
+  #       run: echo docker build -t $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
 
-      - name: Docker Login
-        run: |
-          echo Secret - ${{ secrets.DOCKER_PASSWORD }}
-          echo docker login --username=$DOCKER_USERNAME --password=${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Docker Login
+  #       run: |
+  #         echo Secret - ${{ secrets.DOCKER_PASSWORD }}
+  #         echo docker login --username=$DOCKER_USERNAME --password=${{ secrets.DOCKER_PASSWORD }}
         
-      - name: Docker Publish
-        run: echo docker push $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
+  #     - name: Docker Publish
+  #       run: echo docker push $CONTAINER_REGISTRY/$DOCKER_USERNAME/imageName:latest
 
   deploy:
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-20.04, windows-latest]
         images: [hello-world, alpine]
+        os: [ubuntu-latest, ubuntu-20.04, windows-latest]
         include:
-          - images: [amd64/alpine]
-            os: [windows-latest]
+          - images: amd64/alpine
+            os: windows-latest
         exclude:
-          - images: [alpine]
-            os: [windows-latest]  
-    needs: [docker]
+          - images: alpine
+            os: windows-latest
+    # needs: [docker]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Echo Docker Details
