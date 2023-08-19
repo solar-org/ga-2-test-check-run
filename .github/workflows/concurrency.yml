@@ -13,13 +13,13 @@ jobs:
                 echo testing
 
     deploy:
-        timeout-minutes: 0.1
+        timeout-minutes: 1
         concurrency: 
             group: production
             cancel-in-progress: true
         runs-on: ubuntu-latest
         steps:
-            - name: testing
+            - name: deploying
               run: |
                 sleep 600
                 echo deploying
