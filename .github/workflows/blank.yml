@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   push:
-    # branches-ignore:  # add ONLY this and explain, it will run for push on any branch except these
+    # branches-ignore:  # add ONLY this and explain, it will run for push on any branch except these ### You cannot use both the branches and branches-ignore filters for the same event in a workflow.
     #   - feature/*     # feature/add-music, feature/updateImages
     #   - test/**       # test/ui/index, test/checkout/payment/
     branches: 
@@ -15,7 +15,7 @@ on:
     types:
       - opened
       - reopened
-    paths-ignore:  
+    paths-ignore:  #You cannot use both the paths and paths-ignore filters for the same event in a workflow.
       - README.md
     branches: 
         - feature/*
