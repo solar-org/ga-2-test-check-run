@@ -8,34 +8,52 @@ on:
       - '!feature/*'    # ignoring pushing to any feature branch using !
 
 jobs:
-  unit-testing:
-    strategy:
-      matrix:
-        node_version: [18, 19, 20]
-        operating_system: [ubuntu-latest, macos-latest]
-        exclude:
-          - node_version: 18
-            operating_system: macos-latest
-      max-parallel: 3  # by default all the combinations are executed in parallel
-                       # run a maximum of 2 jobs at a time, even if there are runners available to run all six jobs at once
-    runs-on: ${{ matrix.operating_system }}
+  # unit-testing:
+  #   strategy:
+  #     matrix:
+  #       node_version: [20] # use all 3 [18, 19, 20]
+  #       operating_system: [ubuntu-latest] # use both [ubuntu-latest, macos-latest]
+  #   runs-on: ${{ matrix.operating_system }}
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node_version }}
+     
+  #     - name: NPM Install
+  #       run: npm install
+      
+  #     - name: NPM Testing
+  #       run: NODE_ENV=deploy npm test
+
+  #     - name: Archive Test Result
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: Mocha-Test-Result
+  #         path: test-results.xml
+
+  code-coverage:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
+      - name: Setup NodeJS Version - 19
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node_version }}
+          node-version: 19
      
       - name: NPM Install
         run: npm install
       
       - name: NPM Testing
-        run: NODE_ENV=deploy npm test
+        run: NODE_ENV=deploy npm run coverage
 
       - name: Archive Test Result
         uses: actions/upload-artifact@v3
         with:
           name: Mocha-Test-Result
-          path: test-results.xml
+          path: coverage
