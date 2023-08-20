@@ -7,6 +7,9 @@ on:
       - main
       - '!feature/*'    # ignoring pushing to any feature branch using !
 
+env:
+  DOCKERHUB_USERNAME: siddharth67
+
 jobs:
   unit-testing:
     strategy:
@@ -77,3 +80,13 @@ jobs:
         with:
           name: Code-Coverage-Result
           path: coverage
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [code-coverage, unit-testing]
+    steps:
+      - name: Dockerhub Login
+        uses: docker/login-action@v2
+        with:
+          username: $DOCKERHUB_USERNAME
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
