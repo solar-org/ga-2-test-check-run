@@ -12,110 +12,123 @@ env:
   IMAGE_VERSION: ${{ github.sha }}
 
 jobs:
-  unit-testing:
-    strategy:
-      matrix:
-        node_version: [19]
-        operating_system: [ubuntu-latest]
-        experimental: [false]
-        # include:
-        #   - node_version: 20
-        #     operating_system: windows-latest
-        #     experimental: true
-      max-parallel: 3  
-    runs-on: ${{ matrix.operating_system }}
-    continue-on-error: ${{ matrix.experimental }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node_version }}
-          
-      - name: Cache NPM dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
-      
-      - name: NPM Install
-        run: npm install
-        
-      - name: NPM Testing
-        run: NODE_ENV=deploy npm test
-
-      - name: Archive Test Result
-        uses: actions/upload-artifact@v3
-        with:
-          name: Mocha-Test-Result
-          path: test-results.xml
-
-  code-coverage:
+  test:
+    services:
+      mongo:
+        image: siddharth67/mongo-db:non-prod
+        ports: 
+          - 27017:27017
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup NodeJS Version - 19
-        uses: actions/setup-node@v3
-        with:
-          node-version: 19
-
-      - name: Cache NPM dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
-             
-      - name: NPM Install
-        run: npm install
-      
-      - name: NPM Code Coverage
-        run: NODE_ENV=deploy npm run coverage
-        continue-on-error: true
-
-      - name: Archive Code Coverage Result
-        uses: actions/upload-artifact@v3
-        with:
-          name: Code-Coverage-Result
-          path: coverage
-
-  docker:
-    runs-on: ubuntu-latest
-    needs: [code-coverage, unit-testing]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Dockerhub Login
-        uses: docker/login-action@v2.2.0
-        with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Docker Build For Testing
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          load: true
-          push: false
-          tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
-      
-      - name: Docker Image Test
+      - name: test
         run: |
           docker images
-          docker run --name solar-system-app -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
-          export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
-          echo $IP
-          echo ***** Testing *****
-          docker run  alpine wget -q -O - http://$IP:3000/live | grep live
+          docker ps 
+          docker run  alpine wget -q -O - http://mongo:27017/os
+  # unit-testing:
+  #   strategy:
+  #     matrix:
+  #       node_version: [19]
+  #       operating_system: [ubuntu-latest]
+  #       experimental: [false]
+  #       # include:
+  #       #   - node_version: 20
+  #       #     operating_system: windows-latest
+  #       #     experimental: true
+  #     max-parallel: 3  
+  #   runs-on: ${{ matrix.operating_system }}
+  #   continue-on-error: ${{ matrix.experimental }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Docker Build and Push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-        #  file: Dockerfile
-          push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #     - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node_version }}
+          
+  #     - name: Cache NPM dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
+      
+  #     - name: NPM Install
+  #       run: npm install
+        
+  #     - name: NPM Testing
+  #       run: NODE_ENV=deploy npm test
+
+  #     - name: Archive Test Result
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: Mocha-Test-Result
+  #         path: test-results.xml
+
+  # code-coverage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup NodeJS Version - 19
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 19
+
+  #     - name: Cache NPM dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
+             
+  #     - name: NPM Install
+  #       run: npm install
+      
+  #     - name: NPM Code Coverage
+  #       run: NODE_ENV=deploy npm run coverage
+  #       continue-on-error: true
+
+  #     - name: Archive Code Coverage Result
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: Code-Coverage-Result
+  #         path: coverage
+
+  # docker:
+  #   runs-on: ubuntu-latest
+  #   needs: [code-coverage, unit-testing]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Dockerhub Login
+  #       uses: docker/login-action@v2.2.0
+  #       with:
+  #         username: ${{ env.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+  #     - name: Docker Build For Testing
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         load: true
+  #         push: false
+  #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+      
+  #     - name: Docker Image Test
+  #       run: |
+  #         docker images
+  #         docker run --name solar-system-app -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #         export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
+  #         echo $IP
+  #         echo ***** Testing *****
+  #         docker run  alpine wget -q -O - http://$IP:3000/live | grep live
+
+  #     - name: Docker Build and Push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #       #  file: Dockerfile
+  #         push: true
+  #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
