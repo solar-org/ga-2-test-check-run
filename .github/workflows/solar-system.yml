@@ -97,6 +97,9 @@ jobs:
       
       - name: NPM Code Coverage
         run: NODE_ENV=test npm run coverage
+        env:
+          MONGO_HOST: localhost
+          MONGO_PORT: 27017
         continue-on-error: true
 
       - name: Archive Code Coverage Result
