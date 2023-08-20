@@ -15,7 +15,7 @@ jobs:
         operating_systems: [ubuntu-latest, macos-latest]
         exclude:
           - node_version: [18, 19]
-            operating_systems: [macos-latest]
+            operating_systems: macos-latest
       max-parallel: 2  # by default all the combinations are executed in parallel
                        # run a maximum of 2 jobs at a time, even if there are runners available to run all six jobs at once
     runs-on: ${{ matrix.operating_systems }}
