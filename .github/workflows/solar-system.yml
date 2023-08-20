@@ -9,6 +9,7 @@ on:
 
 env:
   DOCKERHUB_USERNAME: siddharth67
+  IMAGE_VERSION: ${{ github.sha }}
 
 jobs:
   # unit-testing:
@@ -90,3 +91,11 @@ jobs:
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
