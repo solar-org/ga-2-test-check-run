@@ -12,63 +12,38 @@ env:
   IMAGE_VERSION: ${{ github.sha }}
 
 jobs:
-  # test:
-  #   services:
-  #     mongo-db:
-  #       image: siddharth67/mongo-db:non-prod
-  #       ports: 
-  #         - 27017:27017
-  #       options: 
-  #         --name mongo
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: test
-  #       run: |
-  #         echo  ${{ toJson(job.services.mongo-db) }}
-  #         # docker images
-  #         # docker ps 
-  #         # docker run  alpine wget -q -O - http://0.0.0.0:27017/os
-  # unit-testing:
-  #   strategy:
-  #     matrix:
-  #       node_version: [19]
-  #       operating_system: [ubuntu-latest]
-  #       experimental: [false]
-  #       # include:
-  #       #   - node_version: 20
-  #       #     operating_system: windows-latest
-  #       #     experimental: true
-  #     max-parallel: 3  
-  #   runs-on: ${{ matrix.operating_system }}
-  #   continue-on-error: ${{ matrix.experimental }}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node_version }}
+      - name: Setup NodeJS Version - 19 on ubuntu-latest
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
           
-  #     - name: Cache NPM dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
       
-  #     - name: NPM Install
-  #       run: npm install
+      - name: NPM Install
+        run: npm install
         
-  #     - name: NPM Testing
-  #       run: NODE_ENV=deploy npm test
+      - name: NPM Testing
+        run: NODE_ENV=uniTest npm test
 
-  #     - name: Archive Test Result
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: Mocha-Test-Result
-  #         path: test-results.xml
+      - name: Archive Test Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mocha-Test-Result
+          path: test-results.xml
 
   code-coverage:
+    container: 
+      image: node:19
     runs-on: ubuntu-latest
     services:
       mongo-db:
@@ -81,10 +56,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup NodeJS Version - 19
-        uses: actions/setup-node@v3
-        with:
-          node-version: 19
+      # - name: Setup NodeJS Version - 19
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 19
 
       - name: Cache NPM dependencies
         uses: actions/cache@v3
