@@ -8,53 +8,57 @@ on:
       - '!feature/*'    # ignoring pushing to any feature branch using !
 
 jobs:
-  # unit-testing:
-  #   strategy:
-  #     matrix:
-  #       node_version: [20] # use all 3 [18, 19, 20]
-  #       operating_system: [ubuntu-latest] # use both [ubuntu-latest, macos-latest]
-  #   runs-on: ${{ matrix.operating_system }}
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
-
-  #     - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node_version }}
-     
-  #     - name: NPM Install
-  #       run: npm install
-      
-  #     - name: NPM Testing
-  #       run: NODE_ENV=deploy npm test
-
-  #     - name: Archive Test Result
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: Mocha-Test-Result
-  #         path: test-results.xml
-
-  code-coverage:
-    runs-on: ubuntu-latest
+  unit-testing:
+    strategy:
+      matrix:
+        node_version: [20] # use all 3 [18, 19, 20]
+        operating_system: [ubuntu-latest] # use both [ubuntu-latest, macos-latest]
+        experimental: [false]
+        include:
+          - node_version: 20
+            operating_system: windows-latest
+    runs-on: ${{ matrix.operating_system }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup NodeJS Version - 19
+      - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: ${{ matrix.node_version }}
      
       - name: NPM Install
         run: npm install
       
       - name: NPM Testing
-        run: NODE_ENV=deploy npm run coverage
-        continue-on-error: true
+        run: NODE_ENV=deploy npm test
 
-      - name: Archive Code Coverage Result
+      - name: Archive Test Result
         uses: actions/upload-artifact@v3
         with:
-          name: Code-Coverage-Result
-          path: coverage
+          name: Mocha-Test-Result
+          path: test-results.xml
+
+  # code-coverage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup NodeJS Version - 19
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 19
+     
+  #     - name: NPM Install
+  #       run: npm install
+      
+  #     - name: NPM Code Coverage
+  #       run: NODE_ENV=deploy npm run coverage
+  #       continue-on-error: true
+
+  #     - name: Archive Code Coverage Result
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: Code-Coverage-Result
+  #         path: coverage
