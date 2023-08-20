@@ -1,0 +1,27 @@
+name: Solar System
+
+on:  
+  workflow_dispatch: 
+  push:
+    branches: 
+      - main
+      - '!feature/*'    # ignoring pushing to any feature branch using !
+
+jobs:
+  unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        run: actions/checkout@v3
+
+      - name: Setup NodeJS Version - 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+     
+      - name: NPM Install
+        uses: npm install
+      
+      - name: NPM Testing
+        uses: NODE_ENV=deploy npm test
