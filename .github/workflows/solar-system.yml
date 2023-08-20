@@ -14,16 +14,19 @@ env:
 jobs:
   test:
     services:
-      mongo:
+      mongo-db:
         image: siddharth67/mongo-db:non-prod
         ports: 
           - 27017:27017
+        options: 
+          --name mongo
     runs-on: ubuntu-latest
     steps:
       - name: test
         run: |
           docker images
           docker ps 
+          curl localhost:27017/os
           docker run  alpine wget -q -O - http://mongo:27017/os
   # unit-testing:
   #   strategy:
