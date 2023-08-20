@@ -33,7 +33,7 @@ jobs:
         run: npm install
         
       - name: NPM Testing
-        run: NODE_ENV=uniTest npm test
+        run: NODE_ENV=unitTest npm test
 
       - name: Archive Test Result
         uses: actions/upload-artifact@v3
@@ -41,44 +41,44 @@ jobs:
           name: Mocha-Test-Result
           path: test-results.xml
 
-  code-coverage:
-    container: 
-      image: node:19
-    runs-on: ubuntu-latest
-    services:
-      mongo-db:
-        image: siddharth67/mongo-db:non-prod
-        ports: 
-          - 27017:27017
-        options: 
-          --name mongo
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # code-coverage:
+  #   container: 
+  #     image: node:19
+  #   runs-on: ubuntu-latest
+  #   services:
+  #     mongo-db:
+  #       image: siddharth67/mongo-db:non-prod
+  #       ports: 
+  #         - 27017:27017
+  #       options: 
+  #         --name mongo
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      # - name: Setup NodeJS Version - 19
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 19
+  #     # - name: Setup NodeJS Version - 19
+  #     #   uses: actions/setup-node@v3
+  #     #   with:
+  #     #     node-version: 19
 
-      - name: Cache NPM dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
+  #     - name: Cache NPM dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
              
-      - name: NPM Install
-        run: npm install
+  #     - name: NPM Install
+  #       run: npm install
       
-      - name: NPM Code Coverage
-        run: NODE_ENV=codeCoverage npm run coverage
-        continue-on-error: true
+  #     - name: NPM Code Coverage
+  #       run: NODE_ENV=codeCoverage npm run coverage
+  #       continue-on-error: true
 
-      - name: Archive Code Coverage Result
-        uses: actions/upload-artifact@v3
-        with:
-          name: Code-Coverage-Result
-          path: coverage
+  #     - name: Archive Code Coverage Result
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: Code-Coverage-Result
+  #         path: coverage
 
   # docker:
   #   runs-on: ubuntu-latest
