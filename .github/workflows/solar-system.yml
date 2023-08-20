@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
      
       - name: NPM Install
-        uses: npm install
+        run: npm install
       
       - name: NPM Testing
-        uses: NODE_ENV=deploy npm test
+        run: NODE_ENV=deploy npm test
