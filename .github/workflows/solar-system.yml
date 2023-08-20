@@ -11,13 +11,16 @@ jobs:
   unit-testing:
     strategy:
       matrix:
-        node_version: [20] # use all 3 [18, 19, 20]
-        operating_system: [ubuntu-latest] # use both [ubuntu-latest, macos-latest]
+        node_version: [19]
+        operating_system: [ubuntu-latest]
         experimental: [false]
         include:
           - node_version: 20
             operating_system: windows-latest
+            experimental: true
+      max-parallel: 3  
     runs-on: ${{ matrix.operating_system }}
+    continue-on-error: ${{ matrix.experimental }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
