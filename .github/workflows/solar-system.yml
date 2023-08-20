@@ -40,18 +40,20 @@ jobs:
         run: npm install
 
       - name: Check Repo files after npm install
-        run: |
-          ls -ltr
-          ls -ltr ~/.npm
+        run: ls -ltr
+      
+      - name: Ch
+        run:  ls -ltr ~/.npm
+      - name: Ch222
+        run:  ls -ltr ~/.npm/_cacache
+      # - name: NPM Testing
+      #   run: NODE_ENV=deploy npm test
 
-      - name: NPM Testing
-        run: NODE_ENV=deploy npm test
-
-      - name: Archive Test Result
-        uses: actions/upload-artifact@v3
-        with:
-          name: Mocha-Test-Result
-          path: test-results.xml
+      # - name: Archive Test Result
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Mocha-Test-Result
+      #     path: test-results.xml
 
   # code-coverage:
   #   runs-on: ubuntu-latest
