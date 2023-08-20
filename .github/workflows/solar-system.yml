@@ -26,7 +26,7 @@ jobs:
         run: |
           docker images
           docker ps 
-          curl localhost:27017/os
+          curl -s http://0.0.0.0:27017/os
           docker run  alpine wget -q -O - http://mongo:27017/os
   # unit-testing:
   #   strategy:
