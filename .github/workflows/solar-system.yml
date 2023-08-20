@@ -16,7 +16,7 @@ jobs:
         exclude:
           - node_version: 18
             operating_system: macos-latest
-      max-parallel: 2  # by default all the combinations are executed in parallel
+      max-parallel: 3  # by default all the combinations are executed in parallel
                        # run a maximum of 2 jobs at a time, even if there are runners available to run all six jobs at once
     runs-on: ${{ matrix.operating_system }}
     steps:
@@ -33,3 +33,9 @@ jobs:
       
       - name: NPM Testing
         run: NODE_ENV=deploy npm test
+
+      - name: Archive Test Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mocha-Test-Result
+          path: test-results.xml
