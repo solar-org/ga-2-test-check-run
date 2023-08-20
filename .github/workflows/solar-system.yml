@@ -105,7 +105,8 @@ jobs:
       
       - name: Docker Image Test
         run: |
-          docker --name solar-system-app -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+          docker images
+          docker run --name solar-system-app -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
           export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
           echo $IP
           echo ***** Testing *****
