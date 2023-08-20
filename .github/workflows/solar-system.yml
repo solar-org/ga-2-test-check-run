@@ -12,18 +12,18 @@ jobs:
     strategy:
       matrix:
         node_version: [18, 19, 20]
-        operating_systems: [ubuntu-latest, macos-latest]
+        operating_system: [ubuntu-latest, macos-latest]
         exclude:
-          - node_version: [18, 19]
-            operating_systems: macos-latest
+          - node_version: 18
+            operating_system: macos-latest
       max-parallel: 2  # by default all the combinations are executed in parallel
                        # run a maximum of 2 jobs at a time, even if there are runners available to run all six jobs at once
-    runs-on: ${{ matrix.operating_systems }}
+    runs-on: ${{ matrix.operating_system }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_systems }}
+      - name: Setup NodeJS Version - ${{ matrix.node_version }} on ${{ matrix.operating_system }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node_version }}
