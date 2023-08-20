@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo  ${{ job.services.mongo-db }}
+          echo  ${{ toJson(job.services.mongo-db) }}
           # docker images
           # docker ps 
           # docker run  alpine wget -q -O - http://0.0.0.0:27017/os
