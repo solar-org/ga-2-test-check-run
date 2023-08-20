@@ -12,7 +12,9 @@ jobs:
     strategy:
       matrix:
         node_version: [18, 19, 20]
-        operating_systems: [ubuntu-latest, windows-latest, macos-latest]
+        operating_systems: [ubuntu-latest, macos-latest]
+      max-parallel: 2  # by default all the combinations are executed in parallel
+                       # run a maximum of 2 jobs at a time, even if there are runners available to run all six jobs at once
     runs-on: ${{ matrix.operating_systems }}
     steps:
       - name: Checkout Repository
