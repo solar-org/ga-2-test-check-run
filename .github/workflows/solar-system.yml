@@ -9,16 +9,19 @@ on:
 
 jobs:
   unit-testing:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: [18, 19, 20]
+        operating_systems: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.operating_systems }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup NodeJS Version - 18
+      - name: Setup NodeJS Version - ${{ matrix.node_version }}
         uses: actions/setup-node@v3
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: ${{ matrix.node_version }}
      
       - name: NPM Install
         run: npm install
