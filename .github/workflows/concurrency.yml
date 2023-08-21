@@ -43,7 +43,7 @@ jobs:
                 sleep 6
                 echo deploying
     docker3:
-      needs: test
+      needs: [docker2, test]
       runs-on: ubuntu-latest
       steps:
             - name: deploying
