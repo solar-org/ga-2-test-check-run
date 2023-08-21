@@ -9,10 +9,11 @@ jobs:
         steps:
             - name: testing
               run: |
-                sleep 600
+                sleep 6
                 echo testing
 
     deploy:
+        needs: test
         timeout-minutes: 1
         concurrency: 
             group: production
@@ -21,5 +22,31 @@ jobs:
         steps:
             - name: deploying
               run: |
-                sleep 600
+                sleep 10
+                echo deploying
+
+    docker:
+      needs: deploy
+      runs-on: ubuntu-latest
+        steps:
+            - name: deploying
+              run: |
+                sleep 6
+                echo deploying
+
+    docker2:
+      needs: docker
+      runs-on: ubuntu-latest
+        steps:
+            - name: deploying
+              run: |
+                sleep 6
+                echo deploying
+    docker3:
+      needs: test
+      runs-on: ubuntu-latest
+        steps:
+            - name: deploying
+              run: |
+                sleep 6
                 echo deploying
