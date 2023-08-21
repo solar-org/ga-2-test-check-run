@@ -127,7 +127,7 @@ jobs:
 
   deploy:
     outputs:
-      INGRESS_IP: ${{ steps.get-ingress-ip-address.outputs.IP123 }}
+      INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.INGRESS_HOST }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -172,7 +172,11 @@ jobs:
       - name: Get IP
         id: get-ingress-ip-address
         run: |
+<<<<<<< HEAD
+          echo "INGRESS_HOST=(kubectl -n ${{ env.NAMESPACE }} get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
+=======
           echo "IP123=$(kubectl -n dev123 get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
+>>>>>>> 3529aea2ce329e3a47acd5098152ca4d29761a0c
 
   integration-test:
     needs: deploy
@@ -182,7 +186,7 @@ jobs:
     steps:
       - name: Curl
         env:
-          ip: ${{ needs.deploy.outputs.INGRESS_IP }}
+          URL: ${{ needs.deploy.outputs.INGRESS_URL }}
         run: |
-          echo $ip
+          echo $URL
         #  curl $ip/live -sk | jq -r .status | grep -i live
