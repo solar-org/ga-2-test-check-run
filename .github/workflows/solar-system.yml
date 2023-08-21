@@ -178,9 +178,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      name: Curl
-      env:
-        ip: ${{ needs.deploy.outputs.INGRESS_IP }}
-      run: |
-        echo $ip
-      #  curl $ip/live -sk | jq -r .status | grep -i live
+      - name: Curl
+        env:
+          ip: ${{ needs.deploy.outputs.INGRESS_IP }}
+        run: |
+          echo $ip
+        #  curl $ip/live -sk | jq -r .status | grep -i live
