@@ -164,6 +164,6 @@ jobs:
       
       - name: Deploy to Dev K8S Cluster
         run: |
-          kubectl apply -f kubernetes/development/deploymnet.yaml
+          kubectl apply -f kubernetes/development/deployment.yaml
           kubectl apply -f kubernetes/development/service.yaml
           
