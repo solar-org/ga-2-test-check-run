@@ -150,8 +150,6 @@ jobs:
         run: kubectl get nodes
 
       - name: Nginx Ingress IP
-        env:
-          NAMESPACE: ${{ vars.NAMESPACE }}
         run: |
           echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
 
@@ -182,7 +180,7 @@ jobs:
         env:
           NAMESPACE: ${{ vars.NAMESPACE }}
         run: |
-          echo "APP_INGRESS_HOST=(kubectl -n ${{ vars.NAMESPACE }} get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
+          echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
 
   integration-test:
     needs: deploy
