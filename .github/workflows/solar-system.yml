@@ -145,4 +145,4 @@ jobs:
         #  context: <context name>
 
       - name: test kubectl
-        run: kubectl get version
+        run: kubectl version
