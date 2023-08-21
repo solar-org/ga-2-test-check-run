@@ -28,7 +28,7 @@ jobs:
     docker:
       needs: deploy
       runs-on: ubuntu-latest
-        steps:
+      steps:
             - name: deploying
               run: |
                 sleep 6
@@ -37,7 +37,7 @@ jobs:
     docker2:
       needs: docker
       runs-on: ubuntu-latest
-        steps:
+      steps:
             - name: deploying
               run: |
                 sleep 6
@@ -45,7 +45,7 @@ jobs:
     docker3:
       needs: test
       runs-on: ubuntu-latest
-        steps:
+      steps:
             - name: deploying
               run: |
                 sleep 6
