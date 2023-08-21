@@ -87,183 +87,205 @@ jobs:
           name: Code-Coverage-Result
           path: coverage
 
-  docker:
+  reports-s3:
+    needs: code-coverage
     runs-on: ubuntu-latest
-    needs: [code-coverage, unit-testing]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Dockerhub Login
-        uses: docker/login-action@v2.2.0
+      steps:
+      - name: Download Mocha Test Artifact
+        uses: actions/download-artifact@v3
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          name: Mocha-Test-Result
 
-      - name: Docker Build For Testing
-        uses: docker/build-push-action@v4
+      - name: Download Code Coverage Artifact
+        uses: actions/download-artifact@v3
         with:
-          context: .
-          load: true
-          push: false
-          tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+          name: Code-Coverage-Result
+
+      - name: Merge Test Files
+        run: |
+          ls -ltr
+          mkdir reports-${{ github.sha }}
+          mv coverage/ reports-${{ github.sha }}/
+          mv test-results.xml reports-${{ github.sha }}/
+          ls -ltr reports-${{ github.sha }}/
+
+  # docker:
+  #   runs-on: ubuntu-latest
+  #   needs: [code-coverage, unit-testing]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Dockerhub Login
+  #       uses: docker/login-action@v2.2.0
+  #       with:
+  #         username: ${{ env.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+  #     - name: Docker Build For Testing
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         load: true
+  #         push: false
+  #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
       
-      - name: Docker Image Test
-        run: |
-          docker images
-          docker run  -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
-          sleep 10s
-          docker ps
-          curl -s -k localhost:3000/live | grep -i live
+  #     - name: Docker Image Test
+  #       run: |
+  #         docker images
+  #         docker run  -d -p 3000:3000 ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #         sleep 10s
+  #         docker ps
+  #         curl -s -k localhost:3000/live | grep -i live
 
-      - name: Docker Build and Push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-        #  file: Dockerfile
-          push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #     - name: Docker Build and Push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #       #  file: Dockerfile
+  #         push: true
+  #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
 
-  dev-deploy:
-    needs: docker
-    outputs:
-      APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
-    runs-on: ubuntu-latest
-    environment:
-      name: development
-      url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # dev-deploy:
+  #   needs: docker
+  #   outputs:
+  #     APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: development
+  #     url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install Kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.27.0' # default is latest stable
-        id: install
+  #     - name: Install Kubectl
+  #       uses: azure/setup-kubectl@v3
+  #       with:
+  #         version: 'v1.27.0' # default is latest stable
+  #       id: install
 
-      - name: Set Kube Context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-        #  context: <context name>
+  #     - name: Set Kube Context
+  #       uses: azure/k8s-set-context@v3
+  #       with:
+  #         method: kubeconfig
+  #         kubeconfig: ${{ secrets.KUBECONFIG }}
+  #       #  context: <context name>
 
-      - name: Check Kube Nodes
-        run: kubectl get nodes
+  #     - name: Check Kube Nodes
+  #       run: kubectl get nodes
 
-      - name: Nginx Ingress IP
-        run: |
-          echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
+  #     - name: Nginx Ingress IP
+  #       run: |
+  #         echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
 
-      - name: Replace ENV values
-        uses: cschleiden/replace-tokens@v1
-        with:
-          tokenPrefix: '_{_'
-          tokenSuffix: '_}_'
-          files: '["kubernetes/*.yaml"]'
-        env:
-          NAMESPACE: ${{ vars.NAMESPACE }}
-          REPLICAS: ${{ vars.REPLICAS }}
-          IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
-          INGRESS_IP: ${{ env.INGRESS_IP }}
+  #     - name: Replace ENV values
+  #       uses: cschleiden/replace-tokens@v1
+  #       with:
+  #         tokenPrefix: '_{_'
+  #         tokenSuffix: '_}_'
+  #         files: '["kubernetes/*.yaml"]'
+  #       env:
+  #         NAMESPACE: ${{ vars.NAMESPACE }}
+  #         REPLICAS: ${{ vars.REPLICAS }}
+  #         IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #         INGRESS_IP: ${{ env.INGRESS_IP }}
 
-      - name: Check files
-        run: |
-          cat kubernetes/*.yaml
+  #     - name: Check files
+  #       run: |
+  #         cat kubernetes/*.yaml
       
-      - name: Deploy to K8S Cluster
-        run: |
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          kubectl apply -f kubernetes/ingress.yaml
+  #     - name: Deploy to K8S Cluster
+  #       run: |
+  #         kubectl apply -f kubernetes/deployment.yaml
+  #         kubectl apply -f kubernetes/service.yaml
+  #         kubectl apply -f kubernetes/ingress.yaml
           
-      - name: Get IP
-        id: get-ingress-ip-address
-        env:
-          NAMESPACE: ${{ vars.NAMESPACE }}
-        run: |
-          echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> "$GITHUB_OUTPUT"
+  #     - name: Get IP
+  #       id: get-ingress-ip-address
+  #       env:
+  #         NAMESPACE: ${{ vars.NAMESPACE }}
+  #       run: |
+  #         echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> "$GITHUB_OUTPUT"
 
-  dev-integration-test:
-    needs: dev-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Curl
-        env:
-          URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
-        run: |
-          echo $URL
-          curl https://$URL/live -s -k | jq -r .status | grep -i live
+  # dev-integration-test:
+  #   needs: dev-deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Curl
+  #       env:
+  #         URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
+  #       run: |
+  #         echo $URL
+  #         curl https://$URL/live -s -k | jq -r .status | grep -i live
 
-  prod-deploy:
-    needs: dev-integration-test
-    outputs:
-      APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # prod-deploy:
+  #   needs: dev-integration-test
+  #   outputs:
+  #     APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+  #     url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install Kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.27.0' # default is latest stable
-        id: install
+  #     - name: Install Kubectl
+  #       uses: azure/setup-kubectl@v3
+  #       with:
+  #         version: 'v1.27.0' # default is latest stable
+  #       id: install
 
-      - name: Set Kube Context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-        #  context: <context name>
+  #     - name: Set Kube Context
+  #       uses: azure/k8s-set-context@v3
+  #       with:
+  #         method: kubeconfig
+  #         kubeconfig: ${{ secrets.KUBECONFIG }}
+  #       #  context: <context name>
 
-      - name: Check Kube Nodes
-        run: kubectl get nodes
+  #     - name: Check Kube Nodes
+  #       run: kubectl get nodes
 
-      - name: Nginx Ingress IP
-        run: |
-          echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
+  #     - name: Nginx Ingress IP
+  #       run: |
+  #         echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
 
-      - name: Replace ENV values
-        uses: cschleiden/replace-tokens@v1
-        with:
-          tokenPrefix: '_{_'
-          tokenSuffix: '_}_'
-          files: '["kubernetes/*.yaml"]'
-        env:
-          NAMESPACE: ${{ vars.NAMESPACE }}
-          REPLICAS: ${{ vars.REPLICAS }}
-          IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
-          INGRESS_IP: ${{ env.INGRESS_IP }}
+  #     - name: Replace ENV values
+  #       uses: cschleiden/replace-tokens@v1
+  #       with:
+  #         tokenPrefix: '_{_'
+  #         tokenSuffix: '_}_'
+  #         files: '["kubernetes/*.yaml"]'
+  #       env:
+  #         NAMESPACE: ${{ vars.NAMESPACE }}
+  #         REPLICAS: ${{ vars.REPLICAS }}
+  #         IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+  #         INGRESS_IP: ${{ env.INGRESS_IP }}
 
-      - name: Check files
-        run: |
-          cat kubernetes/*.yaml
+  #     - name: Check files
+  #       run: |
+  #         cat kubernetes/*.yaml
       
-      - name: Deploy to K8S Cluster
-        run: |
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          kubectl apply -f kubernetes/ingress.yaml
+  #     - name: Deploy to K8S Cluster
+  #       run: |
+  #         kubectl apply -f kubernetes/deployment.yaml
+  #         kubectl apply -f kubernetes/service.yaml
+  #         kubectl apply -f kubernetes/ingress.yaml
           
-      - name: Get IP
-        id: get-ingress-ip-address
-        env:
-          NAMESPACE: ${{ vars.NAMESPACE }}
-        run: |
-          echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> "$GITHUB_OUTPUT"
+  #     - name: Get IP
+  #       id: get-ingress-ip-address
+  #       env:
+  #         NAMESPACE: ${{ vars.NAMESPACE }}
+  #       run: |
+  #         echo "APP_INGRESS_HOST=$(kubectl -n ${{ vars.NAMESPACE }} get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> "$GITHUB_OUTPUT"
 
-  prod-integration-test:
-    needs: prod-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Curl
-        env:
-          URL: ${{ needs.prod-deploy.outputs.APP_INGRESS_URL }}
-        run: |
-          echo $URL
-          curl https://$URL/live -s -k | jq -r .status | grep -i live
+  # prod-integration-test:
+  #   needs: prod-deploy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Curl
+  #       env:
+  #         URL: ${{ needs.prod-deploy.outputs.APP_INGRESS_URL }}
+  #       run: |
+  #         echo $URL
+  #         curl https://$URL/live -s -k | jq -r .status | grep -i live
