@@ -127,7 +127,7 @@ jobs:
 
   deploy:
     outputs:
-      INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.INGRESS_HOST }}
+      APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -146,8 +146,12 @@ jobs:
           kubeconfig: ${{ secrets.KUBECONFIG }}
         #  context: <context name>
 
-      - name: test kubectl
-        run: kubectl version
+      - name: Check Kube Nodes
+        run: kubectl get nodes
+
+      - name: Nginx Ingress IP
+        run: |
+          echo "INGRESS_IP=$(kubectl -n $NAMESPACE get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]})" >> $GITHUB_ENV 
 
       - name: Replace ENV values
         uses: cschleiden/replace-tokens@v1
@@ -159,6 +163,7 @@ jobs:
           NAMESPACE: dev123
           REPLICAS: 2
           IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+          INGRESS_IP: $INGRESS_IP
 
       - name: Check files
         run: |
@@ -168,15 +173,12 @@ jobs:
         run: |
           kubectl apply -f kubernetes/development/deployment.yaml
           kubectl apply -f kubernetes/development/service.yaml
+          kubectl apply -f kubernetes/development/ingress.yaml
           
       - name: Get IP
         id: get-ingress-ip-address
         run: |
-<<<<<<< HEAD
-          echo "INGRESS_HOST=(kubectl -n ${{ env.NAMESPACE }} get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
-=======
-          echo "IP123=$(kubectl -n dev123 get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
->>>>>>> 3529aea2ce329e3a47acd5098152ca4d29761a0c
+          echo "APP_INGRESS_HOST=(kubectl -n ${{ env.NAMESPACE }} get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
 
   integration-test:
     needs: deploy
@@ -186,7 +188,7 @@ jobs:
     steps:
       - name: Curl
         env:
-          URL: ${{ needs.deploy.outputs.INGRESS_URL }}
+          URL: ${{ needs.deploy.outputs.APP_INGRESS_URL }}
         run: |
           echo $URL
-        #  curl $ip/live -sk | jq -r .status | grep -i live
+          curl $URL/live -sk | jq -r .status | grep -i live
