@@ -21,7 +21,8 @@ jobs:
           export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
           echo $IP
           curl -s -k localhost:80 
-
+  t5:
+    runs-on: ubuntu-latest
     steps:
       - name: t22
         run: |
