@@ -90,7 +90,7 @@ jobs:
   reports-s3:
     needs: code-coverage
     runs-on: ubuntu-latest
-      steps:
+    steps:
       - name: Download Mocha Test Artifact
         uses: actions/download-artifact@v3
         with:
