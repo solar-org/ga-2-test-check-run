@@ -126,6 +126,8 @@ jobs:
   #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
 
   deploy:
+    outputs:
+      INGRESS_IP: ${{ steps.get-ingress-ip-address.outputs.IP123 }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -167,3 +169,18 @@ jobs:
           kubectl apply -f kubernetes/development/deployment.yaml
           kubectl apply -f kubernetes/development/service.yaml
           
+      - name: Get IP
+        id: get-ingress-ip-address
+        run: |
+          echo "IP123=(kubectl -n dev123 get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
+
+  integration-test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      name: Curl
+      env:
+        ip: ${{ needs.deploy.outputs.INGRESS_IP }}
+      run: |
+        echo $ip
+      #  curl $ip/live -sk | jq -r .status | grep -i live
