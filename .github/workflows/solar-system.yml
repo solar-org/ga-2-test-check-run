@@ -151,7 +151,7 @@ jobs:
 
       - name: Nginx Ingress IP
         run: |
-          echo "INGRESS_IP=(kubectl -n $NAMESPACE get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> $GITHUB_ENV 
+          echo "INGRESS_IP=$(kubectl -n $NAMESPACE get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> $GITHUB_ENV 
 
       - name: Replace ENV values
         uses: cschleiden/replace-tokens@v1
@@ -160,8 +160,8 @@ jobs:
           tokenSuffix: '_}_'
           files: '["kubernetes/development/*.yaml"]'
         env:
-          NAMESPACE: ${{ env.NAMESPACE }}
-          REPLICAS: ${{ env.REPLICAS }}
+          NAMESPACE: ${{ vars.NAMESPACE }}
+          REPLICAS: ${{ vars.REPLICAS }}
           IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
           INGRESS_IP: ${{ env.INGRESS_IP }}
 
