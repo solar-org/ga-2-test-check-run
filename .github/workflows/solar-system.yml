@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: development
-      url: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
+      url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
