@@ -137,5 +137,12 @@ jobs:
           version: 'v1.27.0' # default is latest stable
         id: install
 
+      - name: Set Kube Context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+        #  context: <context name>
+
       - name: test kubectl
         run: kubectl get version
