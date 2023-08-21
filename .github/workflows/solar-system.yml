@@ -125,7 +125,7 @@ jobs:
   #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
 
   deploy:
-    needs: docker
+    # needs: docker
     outputs:
       APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     runs-on: ubuntu-latest
