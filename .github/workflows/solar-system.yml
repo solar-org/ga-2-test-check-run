@@ -146,3 +146,23 @@ jobs:
 
       - name: test kubectl
         run: kubectl version
+
+      - name: Replace ENV values
+        uses: cschleiden/replace-tokens@v1
+        with:
+          tokenPrefix: '_{_'
+          tokenSuffix: '_}_'
+          files: '["kubernetes/development/*.yaml"]'
+        env:
+          NAMESPACE: dev123
+          REPLICAS: 2
+          IMAGE: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
+
+      - name: Check files
+        run: |
+          cat kubernetes/development/*.yaml
+      
+      - name: Deploy to Dev K8S Cluster
+        run: |
+          kubectl apply -f kubernetes/development/ .
+          
