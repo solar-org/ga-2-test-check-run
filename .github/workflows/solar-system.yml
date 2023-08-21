@@ -172,11 +172,13 @@ jobs:
       - name: Get IP
         id: get-ingress-ip-address
         run: |
-          echo "IP123=(kubectl -n dev123 get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
+          echo "IP123=$(kubectl -n dev123 get svc -o=jsonpath="{.items[0].spec.clusterIP}")" >> "$GITHUB_OUTPUT"
 
   integration-test:
     needs: deploy
     runs-on: ubuntu-latest
+    environment:
+
     steps:
       - name: Curl
         env:
