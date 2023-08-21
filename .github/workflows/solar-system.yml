@@ -191,13 +191,13 @@ jobs:
     steps:
       - name: Curl
         env:
-          URL: ${{ needs.deploy.outputs.APP_INGRESS_URL }}
+          URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
         run: |
           echo $URL
           curl https://$URL/live -s -k | jq -r .status | grep -i live
 
   prod-deploy:
-    needs: dev-deploy
+    needs: dev-integration-test
     outputs:
       APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     runs-on: ubuntu-latest
@@ -263,7 +263,7 @@ jobs:
     steps:
       - name: Curl
         env:
-          URL: ${{ needs.deploy.outputs.APP_INGRESS_URL }}
+          URL: ${{ needs.prod-deploy.outputs.APP_INGRESS_URL }}
         run: |
           echo $URL
           curl https://$URL/live -s -k | jq -r .status | grep -i live
