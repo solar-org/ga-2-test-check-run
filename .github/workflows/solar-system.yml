@@ -85,10 +85,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Code-Coverage-Result
-          path: coverage
+          path: coverage/
+          
 
   reports-s3:
-    needs: code-coverage
+    needs: [code-coverage, unit-testing]
     runs-on: ubuntu-latest
     steps:
       - name: Download Mocha Test Artifact
