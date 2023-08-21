@@ -153,7 +153,7 @@ jobs:
         env:
           NAMESPACE: ${{ vars.NAMESPACE }}
         run: |
-          echo "INGRESS_IP=$(kubectl -n $NAMESPACE get ing -o jsonpath="{.items[0].spec.tls[0].hosts[0]}")" >> $GITHUB_ENV 
+          echo "INGRESS_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath="{.status.loadBalancer.ingress[0].ip}")" >> $GITHUB_ENV 
 
       - name: Replace ENV values
         uses: cschleiden/replace-tokens@v1
