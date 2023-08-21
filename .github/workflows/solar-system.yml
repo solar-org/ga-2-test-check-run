@@ -17,8 +17,9 @@ jobs:
     steps:
       - name: t2
         run: |
-          
-          curl -s -k https://httpbin.org/ip | jq .origin
+          URL=solar-system-dev123.45.79.60.65.nip.io
+          echo $URL
+          curl https://$URL/live -s -k | jq -r .status | grep -i live
   # t5:
   #   runs-on: ubuntu-latest
   #   steps:
