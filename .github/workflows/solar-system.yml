@@ -161,7 +161,7 @@ jobs:
 
   dev-deploy:
   #  needs: docker
-    uses: ./.github/workflows/deploymnet.reuse.yml
+    uses: ./.github/workflows/deployment.reuse.yml
 
   dev-integration-test:
     needs: dev-deploy
@@ -177,7 +177,7 @@ jobs:
 
   prod-deploy:
     needs: dev-integration-test
-    uses: ./.github/workflows/deploymnet.reuse.yml 
+    uses: ./.github/workflows/deployment.reuse.yml 
 
   prod-integration-test:
     needs: prod-deploy
