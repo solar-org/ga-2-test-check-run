@@ -167,6 +167,7 @@ jobs:
     with:
       docker-username: siddharth67
       image-version: ${{ github.sha }}
+      k8s-manifest-dir: kubernetes/development/
 
   dev-integration-test:
     needs: dev-deploy
@@ -188,6 +189,7 @@ jobs:
     with:
       docker-username: siddharth67
       image-version: ${{ github.sha }}
+      k8s-manifest-dir: kubernetes/production/
 
   prod-integration-test:
     needs: prod-deploy

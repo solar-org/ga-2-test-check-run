@@ -5,11 +5,21 @@ on:
         inputs:
             docker-username:
                 description: Provide the Username of Docker Container Registry
-                default: siddharth67
+                default: xyz-org
                 required: true
                 type: string
             image-version: 
                 description: Provide the image version/tag
+                required: true
+                type: string
+            kubectl-version:
+                description: Provide the required Kubectl version
+                default: v1.27.0
+                required: false
+                type: string
+            k8s-manifest-dir:
+                description: Directory containing Kubernetes manifests files
+                default: kubernetes/
                 required: true
                 type: string
         secrets:
@@ -32,7 +42,7 @@ jobs:
       - name: Install Kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'v1.27.0' # default is latest stable
+          version: '${{ inputs.kubectl-version }}' # default is v1.27.0
         id: install
 
       - name: Set Kube Context
@@ -54,7 +64,7 @@ jobs:
         with:
           tokenPrefix: '_{_'
           tokenSuffix: '_}_'
-          files: '["kubernetes/development/*.yaml"]'
+          files: '["${{ inputs.k8s-manifest-dir }}*.yaml"]'
         env:
           NAMESPACE: ${{ vars.NAMESPACE }}
           REPLICAS: ${{ vars.REPLICAS }}
@@ -63,11 +73,11 @@ jobs:
 
       - name: Check files
         run: |
-          cat kubernetes/development/*.yaml
+          cat ${{ inputs.k8s-manifest-dir }}*.yaml
       
       - name: Deploy to K8S Cluster
         run: |
-          kubectl apply -f kubernetes/development/
+          kubectl apply -f ${{ inputs.k8s-manifest-dir }}
           
       - name: Get IP
         id: get-ingress-ip-address
