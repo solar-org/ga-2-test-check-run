@@ -162,6 +162,8 @@ jobs:
   dev-deploy:
   #  needs: docker
     uses: ./.github/workflows/deployment-reuse.yml
+    secrets: 
+      k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
 
   dev-integration-test:
     needs: dev-deploy
@@ -178,6 +180,8 @@ jobs:
   prod-deploy:
     needs: dev-integration-test
     uses: ./.github/workflows/deployment-reuse.yml 
+    secrets: 
+      k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
 
   prod-integration-test:
     needs: prod-deploy
