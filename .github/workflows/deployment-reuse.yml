@@ -22,17 +22,22 @@ on:
                 default: kubernetes/
                 required: true
                 type: string
+            environment:
+                description: Provide the Deployment Environment
+                default: dev
+                required: true
+                type: string   
         secrets:
             k8s-kubeconfig:
                 description: Secret holding Kubeconfig file
                 required: true
 
 jobs:
-  dev-deploy:
+  k8s-deploy:
     outputs:
       APP_INGRESS_URL: ${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     environment:
-      name: development
+      name: ${{ inputs.environment }}
       url: https://${{ steps.get-ingress-ip-address.outputs.APP_INGRESS_HOST }}
     runs-on: ubuntu-latest
     steps:
