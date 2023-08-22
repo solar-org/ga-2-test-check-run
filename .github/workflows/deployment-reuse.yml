@@ -27,6 +27,10 @@ on:
                 default: dev
                 required: true
                 type: string   
+        outputs:
+            application-url:
+                description: Output Application Ingress URL
+                value: ${{ jobs.k8s-deploy.outputs.APP_INGRESS_URL }}
         secrets:
             k8s-kubeconfig:
                 description: Secret holding Kubeconfig file

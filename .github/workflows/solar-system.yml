@@ -176,7 +176,7 @@ jobs:
     steps:
       - name: Curl
         env:
-          URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
+          URL: ${{ needs.dev.outputs.application-url }}
         run: |
           echo $URL
           sleep 30s
@@ -199,7 +199,7 @@ jobs:
     steps:
       - name: Curl
         env:
-          URL: ${{ needs.prod-deploy.outputs.APP_INGRESS_URL }}
+          URL: ${{ needs.prod.outputs.application-url }}
         run: |
           echo $URL
           sleep 30s
