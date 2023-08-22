@@ -185,6 +185,9 @@ jobs:
     uses: ./.github/workflows/deployment-reuse.yml 
     secrets: 
       k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
+    with:
+      docker-username: siddharth67
+      image-version: ${{ github.sha }}
 
   prod-integration-test:
     needs: prod-deploy
