@@ -205,7 +205,7 @@ jobs:
 
       - name: Check files
         run: |
-          cat kubernetes/*.yaml
+          cat kubernetes/development/*.yaml
       
       - name: Deploy to K8S Cluster
         run: |
@@ -275,7 +275,7 @@ jobs:
 
       - name: Check files
         run: |
-          cat kubernetes/*.yaml
+          cat kubernetes/production/*.yaml
       
       - name: Deploy to K8S Cluster
         run: |
