@@ -88,7 +88,7 @@ jobs:
           path: coverage/
 
 
-  reports-s3:
+  reports-azure-blob-storage:
     needs: [code-coverage, unit-testing]
     runs-on: ubuntu-latest
     steps:
@@ -115,6 +115,7 @@ jobs:
         with:
           connection_string: ${{ secrets.AZURE_CONNECTION_STRING }}
           container_name: test-container
+          extra_args: '--destination-path reports-${{ github.sha }}' 
           source_dir: reports-${{ github.sha }}
    
       # - name: Upload to S3
