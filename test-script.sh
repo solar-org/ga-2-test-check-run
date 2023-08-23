@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-apt update
-apt install -y jq lolcat fortune boxes
+# apt update
+# apt install -y jq lolcat fortune boxes
 # set -e
 
 # # setting the input message to a variable

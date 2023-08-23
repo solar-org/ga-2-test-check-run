@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - run: |
+        sudo apt update
+        sudo apt install -y jq lolcat fortune boxes
     - name: cccccccccccccc
       run: |
         chmod +x test-script.sh
