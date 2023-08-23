@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Assign label
         env:
-          name: 123123213123
+          name: ${{ secrets.AZURE_CONNECTION_STRING }}
         run: |
           echo hwejrjdfhnsadklf
           echo $name
