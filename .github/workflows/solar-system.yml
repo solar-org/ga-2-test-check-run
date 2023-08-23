@@ -12,115 +12,122 @@ env:
   IMAGE_VERSION: ${{ github.sha }}
 
 jobs:
-  # unit-testing:
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     mongo-db:
-  #       image: siddharth67/mongo-db:non-prod
-  #       ports: 
-  #         - 27017:27017
-  #       options: 
-  #         --name mongo
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  unit-testing:
+    runs-on: ubuntu-latest
+    services:
+      mongo-db:
+        image: siddharth67/mongo-db:non-prod
+        ports: 
+          - 27017:27017
+        options: 
+          --name mongo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Setup NodeJS Version - 19 on ubuntu-latest
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 19
+      - name: Setup NodeJS Version - 19 on ubuntu-latest
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
           
-  #     - name: Cache NPM dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
       
-  #     - name: NPM Install
-  #       run: npm install
+      - name: NPM Install
+        run: npm install
         
-  #     - name: NPM Testing
-  #       run: NODE_ENV=unitTest npm test
+      - name: NPM Testing
+        run: NODE_ENV=unitTest npm test
 
-  #     - name: Archive Test Result
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: Mocha-Test-Result
-  #         path: test-results.xml
+      - name: Archive Test Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mocha-Test-Result
+          path: test-results.xml
 
-  # code-coverage:
-  #   container: 
-  #     image: node:19
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     mongo-db:
-  #       image: siddharth67/mongo-db:non-prod
-  #       ports: 
-  #         - 27017:27017
-  #       options: 
-  #         --name mongo
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  code-coverage:
+    container: 
+      image: node:19
+    runs-on: ubuntu-latest
+    services:
+      mongo-db:
+        image: siddharth67/mongo-db:non-prod
+        ports: 
+          - 27017:27017
+        options: 
+          --name mongo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     # - name: Setup NodeJS Version - 19
-  #     #   uses: actions/setup-node@v3
-  #     #   with:
-  #     #     node-version: 19
+      # - name: Setup NodeJS Version - 19
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 19
 
-  #     - name: Cache NPM dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
              
-  #     - name: NPM Install
-  #       run: npm install
+      - name: NPM Install
+        run: npm install
       
-  #     - name: NPM Code Coverage
-  #       run: NODE_ENV=codeCoverage npm run coverage
-  #       continue-on-error: true
+      - name: NPM Code Coverage
+        run: NODE_ENV=codeCoverage npm run coverage
+        continue-on-error: true
 
-  #     - name: Archive Code Coverage Result
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: Code-Coverage-Result
-  #         path: coverage/
+      - name: Archive Code Coverage Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Code-Coverage-Result
+          path: coverage/
 
 
-  # # reports-s3:
-  # #   needs: [code-coverage, unit-testing]
-  # #   runs-on: ubuntu-latest
-  # #   steps:
-  # #     - name: Download Mocha Test Artifact
-  # #       uses: actions/download-artifact@v3
-  # #       with:
-  # #         name: Mocha-Test-Result
+  reports-s3:
+    needs: [code-coverage, unit-testing]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Mocha Test Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Mocha-Test-Result
 
-  # #     - name: Download Code Coverage Artifact
-  # #       uses: actions/download-artifact@v3
-  # #       with:
-  # #         name: Code-Coverage-Result
+      - name: Download Code Coverage Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Code-Coverage-Result
 
-  # #     - name: Merge Test Files
-  # #       run: |
-  # #         ls -ltr
-  # #         mkdir reports-${{ github.sha }}
-  # #         mv cobertura-coverage.xml reports-${{ github.sha }}/
-  # #         mv test-results.xml reports-${{ github.sha }}/
-  # #         ls -ltr reports-${{ github.sha }}/
+      - name: Merge Test Files
+        run: |
+          ls -ltr
+          mkdir reports-${{ github.sha }}
+          mv cobertura-coverage.xml reports-${{ github.sha }}/
+          mv test-results.xml reports-${{ github.sha }}/
+          ls -ltr reports-${{ github.sha }}/
       
-  # #     - name: Upload to S3
-  # #       continue-on-error: true
-  # #       uses: jakejarvis/s3-sync-action@master
-  # #       with:
-  # #         args: --acl public-read --follow-symlinks --delete
-  # #       env:
-  # #         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  # #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  # #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  # #         AWS_REGION: 'us-west-1'                       # optional: defaults to us-east-1
-  # #         SOURCE_DIR: 'reports-${{ github.sha }}'       # optional: defaults to entire repository
+      - name: Azure Blob Storage Upload
+        uses: bacongobbler/azure-blob-storage-upload@v3.0.0
+        with:
+          connection_string: ${{ secrets.AZURE_CONNECTION_STRING }}
+          container_name: kktesting123
+          source_dir: reports-${{ github.sha }}
+   
+      # - name: Upload to S3
+      #   continue-on-error: true
+      #   uses: jakejarvis/s3-sync-action@master
+      #   with:
+      #     args: --acl public-read --follow-symlinks --delete
+      #   env:
+      #     AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     AWS_REGION: 'us-west-1'                       # optional: defaults to us-east-1
+      #     SOURCE_DIR: 'reports-${{ github.sha }}'       # optional: defaults to entire repository
 
   # docker:
   #   runs-on: ubuntu-latest
@@ -159,48 +166,48 @@ jobs:
   #         push: true
   #         tags: ${{ env.DOCKERHUB_USERNAME }}/solar-system:${{ env.IMAGE_VERSION }}
 
-  dev:
-  #  needs: docker
-    uses: ./.github/workflows/deployment-reuse.yml
-    secrets: 
-      k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
-    with:
-      docker-username: siddharth67
-      image-version: ${{ github.sha }}
-      k8s-manifest-dir: kubernetes/development/
-      environment: development
+  # dev:
+  # #  needs: docker
+  #   uses: ./.github/workflows/deployment-reuse.yml
+  #   secrets: 
+  #     k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
+  #   with:
+  #     docker-username: siddharth67
+  #     image-version: ${{ github.sha }}
+  #     k8s-manifest-dir: kubernetes/development/
+  #     environment: development
 
-  dev-integration-test:
-    needs: dev
-    runs-on: ubuntu-latest
-    steps:
-      - name: Curl
-        env:
-          URL: ${{ needs.dev.outputs.application-url }}
-        run: |
-          echo $URL
-          sleep 30s
-          curl https://$URL/live -s -k | jq -r .status | grep -i live
+  # dev-integration-test:
+  #   needs: dev
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Curl
+  #       env:
+  #         URL: ${{ needs.dev.outputs.application-url }}
+  #       run: |
+  #         echo $URL
+  #         sleep 30s
+  #         curl https://$URL/live -s -k | jq -r .status | grep -i live
 
-  prod:
-    needs: dev-integration-test
-    uses: ./.github/workflows/deployment-reuse.yml 
-    secrets: 
-      k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
-    with:
-      docker-username: siddharth67
-      image-version: ${{ github.sha }}
-      k8s-manifest-dir: kubernetes/production/
-      environment: production
+  # prod:
+  #   needs: dev-integration-test
+  #   uses: ./.github/workflows/deployment-reuse.yml 
+  #   secrets: 
+  #     k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
+  #   with:
+  #     docker-username: siddharth67
+  #     image-version: ${{ github.sha }}
+  #     k8s-manifest-dir: kubernetes/production/
+  #     environment: production
 
-  prod-integration-test:
-    needs: prod
-    runs-on: ubuntu-latest
-    steps:
-      - name: Curl
-        env:
-          URL: ${{ needs.prod.outputs.application-url }}
-        run: |
-          echo $URL
-          sleep 30s
+  # prod-integration-test:
+  #   needs: prod
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Curl
+  #       env:
+  #         URL: ${{ needs.prod.outputs.application-url }}
+  #       run: |
+  #         echo $URL
+  #         sleep 30s
           curl https://$URL/live -s -k | jq -r .status | grep -i live
