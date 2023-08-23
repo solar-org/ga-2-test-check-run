@@ -13,3 +13,14 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
         echo "$GITHUB_CONTEXT"
+  
+  commnet:    
+    name: ccccccccc event
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: cccccccccccccc
+      run: |
+        chmod +x test-script.sh
+        ./test-script.sh
+  
