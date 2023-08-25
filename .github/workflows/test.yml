@@ -25,7 +25,6 @@ jobs:
 
   d:
     runs-on: ubuntu-latest
-    needs: [a, c]
     steps:
       - name: ddddddddd
         run: echo dddddddddddddddddddddd
@@ -39,7 +38,7 @@ jobs:
 
   f:
     runs-on: ubuntu-latest
-    needs: [a, e]
+    needs: [a, e, d]
     steps:
       - name: ccccccccccc
         run: echo ffffffffffffffffffff
