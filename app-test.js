@@ -181,7 +181,7 @@ describe('Testing Other Endpoints', () => {
               .get('/ready')
               .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.have.property('status').eql('ready123');
+                    res.body.should.have.property('status').eql('ready');
                 done();
               });
         });
