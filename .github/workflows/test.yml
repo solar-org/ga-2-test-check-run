@@ -1,0 +1,49 @@
+name: test
+
+on:  
+  workflow_dispatch:
+
+jobs:
+  a:
+    runs-on: ubuntu-latest
+    steps:
+      - name: aaaaaa
+        run: echo aaaaaaaaaaaaaaaaaaaaa
+
+  b:
+    runs-on: ubuntu-latest
+    steps:
+      - name: bbbbbbbbbb
+        run: echo bbbbbbbbbbbbbbbbbbbbbbb
+
+  c:
+    runs-on: ubuntu-latest
+    needs: a
+    steps:
+      - name: ccccccccccc
+        run: echo ccccccccccccccccc
+
+  d:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ddddddddd
+        run: echo dddddddddddddddddddddd
+
+  e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: bbbbbbbbbb
+        run: echo eeeeeeeeeeeeeeeeeeee
+
+  f:
+    runs-on: ubuntu-latest
+    needs: a
+    steps:
+      - name: ccccccccccc
+        run: echo ffffffffffffffffffff
+
+  g:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ddddddddd
+        run: echo ggggggggggggggggg
