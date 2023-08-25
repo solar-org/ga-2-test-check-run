@@ -45,7 +45,7 @@ jobs:
 
   g:
     runs-on: ubuntu-latest
-    needs: f
+    needs: d
     steps:
       - name: ddddddddd
         run: echo ggggggggggggggggg
