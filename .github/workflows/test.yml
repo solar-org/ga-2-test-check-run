@@ -25,6 +25,7 @@ jobs:
 
   d:
     runs-on: ubuntu-latest
+    needs: [a, c]
     steps:
       - name: ddddddddd
         run: echo dddddddddddddddddddddd
