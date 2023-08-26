@@ -19,7 +19,7 @@ jobs:
 
   c:
     runs-on: ubuntu-latest
-    needs: a
+    needs: [a, b]
     steps:
       - name: ccccccccccc
         run: echo ccccccccccccccccc
