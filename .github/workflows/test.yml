@@ -11,7 +11,7 @@ jobs:
         run: echo aaaaaaaaaaaaaaaaaaaaa
 
   b:
-    if: failure()
+    #if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: bbbbbbbbbb
