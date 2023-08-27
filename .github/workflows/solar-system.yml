@@ -13,7 +13,8 @@ env:
 
 jobs:
   unit-testing:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: demo
     services:
       mongo-db:
         image: siddharth67/mongo-db:non-prod
@@ -33,7 +34,7 @@ jobs:
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: ~/.npm #Note It is not recommended to cache node_modules, as it can break across Node versions and won't work with npm ci
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}     
       
       - name: NPM Install
