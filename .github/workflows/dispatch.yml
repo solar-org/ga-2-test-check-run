@@ -50,3 +50,4 @@ jobs:
             -f 'output[text]=Everything worked as expected. You should see a logo above.' \
             /repos/${{ github.repository }}/check-runs/${{ github.event.client_payload.checkRunId }}
     
+            
