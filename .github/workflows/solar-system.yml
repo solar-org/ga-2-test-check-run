@@ -16,13 +16,6 @@ jobs:
     container: 
       image: node:19
     runs-on: ubuntu-latest
-    services:
-      mongo-db:
-        image: siddharth67/mongo-db:non-prod
-        ports: 
-          - 27017:27017
-        options: 
-          --name mongo
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,7 +35,7 @@ jobs:
         run: npm install
       
       - name: NPM Code Coverage
-        run: NODE_ENV=codeCoverage npm run coverage
+        run: NODE_ENV=deploy npm run coverage
         continue-on-error: true
 
       - name: Archive Code Coverage Result
