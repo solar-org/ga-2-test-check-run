@@ -2,7 +2,7 @@ name: Check Run Triggered Workflow
 
 on:
   check_run:
-    types: [created, completed]
+    types: 
 
 jobs:
   check-run-job:
@@ -20,4 +20,3 @@ jobs:
       if: github.event.action == 'completed'
       run: echo "A check run was completed."
 
-      

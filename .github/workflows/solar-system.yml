@@ -1,0 +1,83 @@
+name: Solar System
+
+on:  
+  workflow_dispatch: 
+  push:
+    branches: 
+      - main
+      - test   # ignoring pushing to any feature branch using !
+  pull_request: 
+    types: opened
+
+
+env:
+  DOCKERHUB_USERNAME: siddharth67
+  IMAGE_VERSION: ${{ github.sha }}
+
+jobs:
+  unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Analyze code with CodeQL
+        uses: github/codeql-action/analyze@v4
+      # - name: Setup NodeJS Version - 19 on ubuntu-latest
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 20
+      
+      # - name: NPM Install
+      #   run: npm install
+        
+      # - name: NPM Testing
+      #   id: unit-testing
+      #   run: NODE_ENV=deploy npm test
+
+      # - name: Archive Test Result
+      #   if: always()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Mocha-Test-Result
+      #     path: test-results.xml
+
+      # - uses: check-run-reporter/action@v2.12.0
+      #   if: always()
+      #   with:
+      #     token: ${{ secrets.CHECK_RUN_REPORTER_TOKEN }}
+      #     report: 'test-results.xml'          
+  # code-coverage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup NodeJS Version - 19
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 19
+
+  #     - name: Cache NPM dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}    
+             
+  #     - name: NPM Install
+  #       run: npm install
+      
+  #     - name: NPM Code Coverage
+  #       run: NODE_ENV=deploy npm run coverage
+  #       continue-on-error: true
+        
+
+  #     - name: list
+  #       run: ls -ltr
+
+  #     - name: Code Coverage Annotation
+  #       uses: ggilder/codecoverage@v1
+  #       with:
+  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #         COVERAGE_FILE_PATH: "./coverage/lcov.info"
+  #         COVERAGE_FORMAT: "lcov"
