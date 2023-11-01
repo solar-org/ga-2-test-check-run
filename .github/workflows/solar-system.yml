@@ -38,6 +38,7 @@ jobs:
       - name: NPM Code Coverage
         run: NODE_ENV=deploy npm run coverage
         continue-on-error: true
+        
 
       - name: list
         run: ls -ltr
