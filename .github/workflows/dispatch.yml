@@ -43,7 +43,7 @@ jobs:
         run: |
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            -f 'status=success' \
+            -f 'conclusion=success' \
             -f 'details_url=status=success' \
             -f 'output[title]=My Check Run Title 🚀' \
             -f 'output[summary]=**Summary**: The run completed.' \
