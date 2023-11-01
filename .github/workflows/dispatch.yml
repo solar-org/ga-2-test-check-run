@@ -28,7 +28,7 @@ jobs:
       # Actually, we'll just sleep to simulate some work
       ####################################################
       - name: Processing        
-        run: sleep 120
+        run: sleep 10
 
       #####################################################
       # Send a final message to complete the run and
