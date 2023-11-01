@@ -44,7 +44,6 @@ jobs:
           gh api -X PATCH -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             -f 'conclusion=success' \
-            -f 'details_url=https://cdn-icons-png.flaticon.com/512/4138/4138124.png' \
             -f 'output[title]=My Check Run Title 🚀' \
             -f 'output[summary]=**Summary**: The run completed.' \
             -f 'output[text]=Everything worked as expected. You should see a logo above.' \
