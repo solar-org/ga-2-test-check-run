@@ -8,7 +8,7 @@ on:
       - test   # ignoring pushing to any feature branch using !
   pull_request: 
     types: opened
-    
+
 
 env:
   DOCKERHUB_USERNAME: siddharth67
@@ -16,17 +16,15 @@ env:
 
 jobs:
   code-coverage:
-    container: 
-      image: node:19
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Setup NodeJS Version - 19
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 19
+      - name: Setup NodeJS Version - 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
 
       - name: Cache NPM dependencies
         uses: actions/cache@v3
@@ -41,11 +39,8 @@ jobs:
         run: NODE_ENV=deploy npm run coverage
         continue-on-error: true
 
-      - name: Archive Code Coverage Result
-        uses: actions/upload-artifact@v3
-        with:
-          name: Code-Coverage-Result
-          path: coverage/
+      - name: list
+        run: ls -ltr
 
       - name: Code Coverage Annotation
         uses: ggilder/codecoverage@v1
