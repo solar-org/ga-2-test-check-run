@@ -8,6 +8,7 @@ on:
       - test   # ignoring pushing to any feature branch using !
   pull_request: 
     types: opened
+    
 
 env:
   DOCKERHUB_USERNAME: siddharth67
