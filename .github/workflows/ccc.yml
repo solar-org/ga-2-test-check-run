@@ -1,0 +1,21 @@
+name: Check Run Triggered Workflow
+
+on:
+  check_run:
+    types: [created, completed]
+
+jobs:
+  check-run-job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run when check run is created
+      if: github.event.action == 'created'
+      run: echo "A check run was created."
+
+    - name: Run when check run is completed
+      if: github.event.action == 'completed'
+      run: echo "A check run was completed."
