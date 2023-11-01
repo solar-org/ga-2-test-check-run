@@ -48,5 +48,5 @@ jobs:
             -f 'output[title]=My Check Run Title 🚀' \
             -f 'output[summary]=**Summary**: The run completed.' \
             -f 'output[text]=Everything worked as expected. You should see a logo above.' \
-            /repos/${{ github.repository }}/check-runs/${{ github.event.client_payload.checkRunId }} \
+            /repos/${{ github.repository }}/check-runs/${{ github.event.client_payload.checkRunId }}
     
