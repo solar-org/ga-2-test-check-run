@@ -5,7 +5,7 @@ on:
   push:
     branches: 
       - main
-      - '!feature/*'    # ignoring pushing to any feature branch using !
+      - test   # ignoring pushing to any feature branch using !
 
 env:
   DOCKERHUB_USERNAME: siddharth67
